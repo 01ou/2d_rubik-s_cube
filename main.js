@@ -281,7 +281,8 @@ class Cube {
     randomRotate(number = 500) {
         for (let i = 0; i < number; i++) {
             const line = Math.floor(Math.random() * 2);
-            const direction = Object.keys(DIRECTIONS)[Math.floor(Math.random() * 3)];
+            const direction = Object.keys(DIRECTIONS)[Math.floor(Math.random() * 4)];
+            console.log(direction);
             this.rotateLine(line, direction, false);
         }
         updateSurfaceFaceHTML();
