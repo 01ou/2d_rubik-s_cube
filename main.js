@@ -278,7 +278,7 @@ class Cube {
         }
     }
 
-    randomRotate(number = 0) {
+    randomRotate(number) {
         for (let i = 0; i < number; i++) {
             const line = Math.floor(Math.random() * 2);
             const direction = Object.keys(DIRECTIONS)[Math.floor(Math.random() * 4)];
@@ -289,7 +289,7 @@ class Cube {
 }
 
 const cube = new Cube();
-cube.randomRotate();
+cube.randomRotate(150);
 
 // HTML要素を作成するための関数
 function createSurfaceFaceHTML(faceData) {
