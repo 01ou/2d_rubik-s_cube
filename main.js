@@ -206,7 +206,7 @@ class Cube {
         let facesInDirection = [];
         let facesInSideDirection = [];
     
-        for (let i = 0; Math.abs(i) < totalFaces; i += isPositiveDirection ? 1 : -1) {
+        for (let i = 0; Math.abs(i) < totalFaces; i -= isPositiveDirection ? 1 : -1) {
             const currentFaceIndex = (i + totalFaces) % totalFaces;
             const currentFace = Object.keys(face)[currentFaceIndex];
     
@@ -278,11 +278,10 @@ class Cube {
         }
     }
 
-    randomRotate(number = 500) {
+    randomRotate(number = 0) {
         for (let i = 0; i < number; i++) {
             const line = Math.floor(Math.random() * 2);
             const direction = Object.keys(DIRECTIONS)[Math.floor(Math.random() * 4)];
-            console.log(direction);
             this.rotateLine(line, direction, false);
         }
         updateSurfaceFaceHTML();
