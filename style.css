@@ -1,0 +1,117 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    height: 100vh;
+}
+
+.main-container {
+    width: 90vw;
+    height: 90vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+}
+
+.surface-container {
+    background-color: lightgray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.cell {
+    width: 50px;
+    height: 50px;
+}
+
+.vertical-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.horizontal-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.vertical-controls button {
+    width: 100px;
+    height: 250px;
+    margin: 5px;
+}
+
+.horizontal-controls button {
+    width: 250px;
+    height: 100px;
+    margin: 5px;
+}
+
+/* Container adjustments */
+.top-container, .bottom-container, .left-container, .right-container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Container positioning */
+.top-container {
+    bottom: 50%;
+    transform: translateY(-50%);
+    margin: 20px;
+    flex-direction: column;
+}
+
+.bottom-container {
+    top: 50%;
+    transform: translateY(50%);
+    margin: 20px;
+    padding: 0;
+    flex-direction: column-reverse;
+}
+
+.left-container {
+    right: 50%;
+    transform: translateX(-50%);
+    margin: 20px;
+    padding: 0;
+    flex-direction: row;
+}
+
+.right-container {
+    left: 50%;
+    transform: translateX(50%);
+    margin: 20px;
+    padding: 0;
+    flex-direction: row-reverse;
+}
+
+/* Button containers */
+.horizontal-container, .vertical-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.horizontal-container {
+    flex-direction: row;
+}
+
+.vertical-container {
+    flex-direction: column;
+}
+
+.buttons button {
+    width: 60px;
+    height: 60px;
+}

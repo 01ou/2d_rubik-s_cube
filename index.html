@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Rubik's Cube</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-container">
+        <div id="surface-container" class="surface-container">
+            <!-- Here will be the display of the cube surface -->
+        </div>
+
+        <div class="top-container">
+            <div class="horizontal-controls">
+                <button onclick="rotateCubeFromUI('UP')">Rotate Up</button>
+            </div>
+            <div id="top-buttons" class="buttons horizontal-container"></div>
+        </div>
+
+        <div class="bottom-container">
+            <div class="horizontal-controls">
+                <button onclick="rotateCubeFromUI('DOWN')">Rotate Down</button>
+            </div>
+            <div id="bottom-buttons" class="buttons horizontal-container"></div>
+        </div>
+
+        <div class="left-container">
+            <div class="vertical-controls">
+                <button onclick="rotateCubeFromUI('LEFT')">Rotate Left</button>
+            </div>
+            <div id="left-buttons" class="buttons vertical-container"></div>
+        </div>
+
+        <div class="right-container">
+            <div class="vertical-controls">
+                <button onclick="rotateCubeFromUI('RIGHT')">Rotate Right</button>
+            </div>
+            <div id="right-buttons" class="buttons vertical-container"></div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
