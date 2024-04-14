@@ -283,8 +283,10 @@ class Cube {
         const lines = [];
         for (const faceKey of facesInDirection) {
             const face = this.faces[faceKey];
-            lines.push(face.getLine(lineNumber, isRow));
+            const line = face.getLine(lineNumber, isRow);
+            lines.push(line);
         }
+        
 
         let count = 0;
         for (const faceKey of facesInDirection) {
@@ -303,11 +305,18 @@ class Cube {
     }
 
     randomRotate(number) {
-        for (let i = 0; i < number; i++) {
-            const line = Math.floor(Math.random() * 2);
-            const direction = Object.keys(DIRECTIONS)[Math.floor(Math.random() * 4)];
-            this.rotateLine(line, direction, false);
+        const faceArray = Object.values(face);
+        for(let faceNumber of faceArray) {
+            const faceName = Object.keys(face)[faceNumber];
+            this.rotateCube(faceName);
+  
+            for (let i = 0; i < number; i++) {
+                const line = Math.floor(Math.random() * 3);
+                const direction = Object.keys(DIRECTIONS)[Math.floor(Math.random() * 4)];
+                this.rotateLine(line, direction, false);
+            }
         }
+
         updateSurfaceFaceHTML();
     }
 
@@ -327,7 +336,7 @@ class Cube {
 }
 
 const cube = new Cube();
-cube.randomRotate(150);
+cube.randomRotate(30);
 
 // HTML要素を作成するための関数
 function createSurfaceFaceHTML(faceData) {
