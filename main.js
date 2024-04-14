@@ -36,6 +36,8 @@ class Face {
         this.size = size;
         this.pieceContent = pieceContent;
         this.facePieces = this.createFace();
+        this.isAligned = false;
+        this.updateAligned();
     }
 
     createFace() {
@@ -168,7 +170,25 @@ class Face {
                 this.facePieces[i][lineNumber] = line[i];
             }
         }
-    }    
+    }
+    
+    updateAligned() {
+        // 最初の行の最初の要素を基準値として取得
+        const firstValue = this.facePieces[0][0];
+
+        // 各要素をチェックして基準値と一致するか確認
+        for (let i = 0; i < this.facePieces.length; i++) {
+            for (let j = 0; j < this.facePieces[i].length; j++) {
+                if (this.facePieces[i][j] !== firstValue) {
+                    this.isAligned = false; // 一致しない要素が見つかった場合はfalseを返す
+                    return false;
+                }
+            }
+        }
+
+        this.isAligned = true;
+        return true;
+    }
 }
 
 class Cube {
@@ -269,10 +289,14 @@ class Cube {
         let count = 0;
         for (const faceKey of facesInDirection) {
             const index = (count + 1) % facesInDirection.length;
-            this.faces[faceKey].setLine(lines[index], lineNumber, isRow);
+            const face = this.faces[faceKey];
+            face.setLine(lines[index], lineNumber, isRow);
+            face.updateAligned();
             count++;
         }
 
+        this.checkAligned();
+        
         if (isUpdateHTML) {
             updateSurfaceFaceHTML();
         }
@@ -285,6 +309,20 @@ class Cube {
             this.rotateLine(line, direction, false);
         }
         updateSurfaceFaceHTML();
+    }
+
+    checkAligned() {
+        const facesArray = Object.values(this.faces); // this.facesのプロパティ値を配列に変換
+    
+        for (let face of facesArray) {
+            if (!face.isAligned) {
+                setAlignedDisplayState(false);
+                return false;
+            }
+        }
+        
+        setAlignedDisplayState(true);
+        return true;
     }
 }
 
@@ -337,6 +375,16 @@ function updateSurfaceFaceHTML() {
     });
 
     container.appendChild(table);
+}
+
+function setAlignedDisplayState(state) {
+    const bodyElement = document.body;
+
+    if (state === true) {
+        bodyElement.style.backgroundColor = 'chartreuse';
+    } else {
+        bodyElement.style.backgroundColor = 'ghostwhite';
+    }
 }
 
 // 回転ボタンを押したときの処理
