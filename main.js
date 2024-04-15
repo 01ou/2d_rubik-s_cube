@@ -32,7 +32,7 @@ const face = {
 };
 
 class Face {
-    constructor(pieceContent, size = 3) {
+    constructor(pieceContent, size) {
         this.size = size;
         this.pieceContent = pieceContent;
         this.facePieces = this.createFace();
@@ -102,6 +102,38 @@ class Face {
                     // 左右反転
                     newRow = row;
                     newCol = numCols - 1 - col;
+                }
+                flippedFacePieces[newRow][newCol] = currentFacePieces[row][col];
+            }
+        }
+    
+        // this.facePieces を更新
+        this.facePieces = flippedFacePieces;
+    }
+
+    flipLine(lineNumber, flipDirection) {
+        const currentFacePieces = [...this.facePieces];
+        const numRows = currentFacePieces.length;
+        const numCols = currentFacePieces[0].length;
+        const isVertical = flipDirection === DIRECTIONS.UP || flipDirection === DIRECTIONS.DOWN;
+
+        // 新しい配列を初期化
+        const flippedFacePieces = new Array(numRows);
+        for (let row = 0; row < numRows; row++) {
+            flippedFacePieces[row] = new Array(numCols);
+        }
+    
+        for (let row = 0; row < numRows; row++) {
+            for (let col = 0; col < numCols; col++) {
+                let newRow, newCol;
+                if (isVertical) {
+                    // 上下反転
+                    newRow = col === lineNumber ? (numRows - 1 - row) : row;
+                    newCol = col;
+                } else if (!isVertical) {
+                    // 左右反転
+                    newRow = row;
+                    newCol = row === lineNumber ? (numCols - 1 - col) : col;
                 }
                 flippedFacePieces[newRow][newCol] = currentFacePieces[row][col];
             }
@@ -192,14 +224,15 @@ class Face {
 }
 
 class Cube {
-    constructor() {
+    constructor(size) {
+        this.size = size;
         this.faces = {
-            SURFACE: new Face(face.SURFACE),
-            TOP: new Face(face.TOP),
-            RIGHT: new Face(face.RIGHT),
-            BACK: new Face(face.BACK),
-            BOTTOM: new Face(face.BOTTOM),
-            LEFT: new Face(face.LEFT),
+            SURFACE: new Face(face.SURFACE, size),
+            TOP: new Face(face.TOP, size),
+            RIGHT: new Face(face.RIGHT, size),
+            BACK: new Face(face.BACK, size),
+            BOTTOM: new Face(face.BOTTOM, size),
+            LEFT: new Face(face.LEFT, size),
         };
         this.init();
     }
@@ -230,7 +263,8 @@ class Cube {
             const currentFaceIndex = (i + totalFaces) % totalFaces;
             const currentFace = Object.keys(face)[currentFaceIndex];
     
-            const shouldSkip = isVertical ? (currentFaceIndex + 1) % 3 === 0 : (currentFaceIndex + 2) % 3 === 0;
+            const oppositeSide = 3;
+            const shouldSkip = isVertical ? (currentFaceIndex + 1) % oppositeSide === 0 : (currentFaceIndex + 2) % oppositeSide === 0;
             if (shouldSkip) {
                 facesInSideDirection.push(currentFace);
                 continue;
@@ -279,23 +313,32 @@ class Cube {
         const direction = DIRECTIONS[directionName];
         const isRow = direction % 2 !== 0;
         const [facesInDirection, facesInSideDirection] = this.getFacesKeyOfRotationDirection(directionName);
-        
         const lines = [];
+
+        const oppositeFace = this.faces['BACK'];
+        oppositeFace.flipLine(lineNumber, DIRECTIONS[directionName]);
+
         for (const faceKey of facesInDirection) {
             const face = this.faces[faceKey];
             const line = face.getLine(lineNumber, isRow);
             lines.push(line);
         }
-        
 
         let count = 0;
         for (const faceKey of facesInDirection) {
             const index = (count + 1) % facesInDirection.length;
             const face = this.faces[faceKey];
             face.setLine(lines[index], lineNumber, isRow);
+               
+            if (faceKey === 'BACK') {
+                face.flipLine(lineNumber, DIRECTIONS[directionName]);
+            }
+
             face.updateAligned();
             count++;
         }
+        
+        this.rotateSideFaceWithLine(lineNumber, direction, facesInSideDirection);
 
         this.checkAligned();
         
@@ -304,14 +347,34 @@ class Cube {
         }
     }
 
+    // ラインのある側面を指定方向に回転する
+    rotateSideFaceWithLine(lineNumber, direction, facesInSideDirection) {
+        const isClockwise = direction < 2; // 方向が時計回りかどうかを判定
+
+        // ライン番号とサイズに応じてインデックスと回転方向を設定
+        let index, rotateDirection;
+        if (lineNumber === 0) {
+            index = isClockwise ? 0 : 1;
+            rotateDirection = isClockwise ? DIRECTIONS.LEFT : DIRECTIONS.RIGHT;
+        } else if (lineNumber + 1 === this.size) {
+            index = isClockwise ? 1 : 0;
+            rotateDirection = isClockwise ? DIRECTIONS.RIGHT : DIRECTIONS.LEFT;
+        }
+
+        // インデックスが有効かつ配列の範囲内であれば、側面を回転させる
+        if (index !== undefined && index >= 0 && index < facesInSideDirection.length) {
+            const rotateFaceIndex = facesInSideDirection[index];
+            const rotateFace = this.faces[rotateFaceIndex];
+            rotateFace.rotateFace(rotateDirection);
+        }
+    }
+
     randomRotate(number) {
-        const faceArray = Object.values(face);
-        for(let faceNumber of faceArray) {
-            const faceName = Object.keys(face)[faceNumber];
-            this.rotateCube(faceName);
+        for (let i = 0; i < 4; i++) {
+            this.rotateCube('UP');
   
             for (let i = 0; i < number; i++) {
-                const line = Math.floor(Math.random() * 3);
+                const line = Math.floor(Math.random() * this.size);
                 const direction = Object.keys(DIRECTIONS)[Math.floor(Math.random() * 4)];
                 this.rotateLine(line, direction, false);
             }
@@ -335,8 +398,8 @@ class Cube {
     }
 }
 
-const cube = new Cube();
-cube.randomRotate(30);
+const cube = new Cube(3);
+cube.randomRotate(50);
 
 // HTML要素を作成するための関数
 function createSurfaceFaceHTML(faceData) {
@@ -406,7 +469,7 @@ const rotateLineFromUI = (line, directionName) => {
 };
 
 const createMoveLineButtons = (directionName, container) => {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < cube.size; i++) {
         const rotateButton = document.createElement('button');
         rotateButton.textContent = DIRECTIONS_TEXT[directionName]; // 正しいテキストを設定
 
